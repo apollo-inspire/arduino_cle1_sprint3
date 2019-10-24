@@ -2,13 +2,10 @@
 #include <Servo.h> 
 
 
-
-
-
 // sonar
 // defines pins numbers
-const int trigPinSonar = 9;
-const int echoPinSonar = 10;
+#define PIN_TRIGSONAR 9
+#define PIN_ECHOSONAR 10
 
 // sonar
 // defines variables
@@ -29,7 +26,7 @@ Servo Servo1;
 // servo
 // Change servo to
 void servoAttack() {
-  Serial.print("SERVO ATTACK MODE"); 
+  Serial.println("SERVO ATTACK MODE"); 
   Servo1.write(0);
   delay(100);
   Servo1.write(180);
@@ -44,8 +41,8 @@ void servoAttack() {
 void setup() {
 
   // sonar
-  pinMode(trigPinSonar, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echoPinSonar, INPUT); // Sets the echoPin as an Input
+  pinMode(PIN_TRIGSONAR, OUTPUT); // Sets the trigPin as an Output
+  pinMode(PIN_ECHOSONAR, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600); // Starts the serial communication
 
   //servo
@@ -63,23 +60,25 @@ void loop() {
 
   // sonar
   // Clears the trigPin
-  digitalWrite(trigPinSonar, LOW);
+  digitalWrite(PIN_TRIGSONAR, LOW);
   delayMicroseconds(2);
   
   // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(trigPinSonar, HIGH);
+  digitalWrite(PIN_TRIGSONAR, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPinSonar, LOW);
+  digitalWrite(PIN_TRIGSONAR, LOW);
   
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  durationSonar = pulseIn(echoPinSonar, HIGH);
+  durationSonar = pulseIn(PIN_ECHOSONAR, HIGH);
   
   // Calculating the distance
   distanceSonar = durationSonar*0.034/2;
   
   // Prints the distance on the Serial Monitor
-  Serial.print("Sonar Distance: ");
-  Serial.println(distanceSonar);
+  char buffer[100];
+  sprintf(buffer, "Sonar Distance: %i cm", distanceSonar);
+  Serial.println(buffer);
+  //Serial.println("Sonar Distance: " + distanceSonar + " cm");
 
 
 
