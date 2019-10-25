@@ -14,28 +14,75 @@ int distanceSonar;
 
 // servo
 // Declare the Servo pin 
-int servoPin = 3;
+int servoPin1 = 3;
+int servoPin2 = 4;
+
+//
+int accelaration = 1;
+
+// startle mode
+bool idleMode = true;
+bool idleStatus = true;
+bool attackMode = false;
+bool attackStatus = false;
+bool defendMode = false;
+bool defendStatus = false;
+bool startleMode = false;
+bool startleStatus = false;
 
 
 // servo
 // Create a servo object 
 Servo Servo1; 
+Servo Servo2; 
 
 
-
-// servo
+// servo 1
 // Change servo to
-void servoAttack() {
-  Serial.println("SERVO ATTACK MODE"); 
+void servo1Attack() {
+  attackStatus = true;
+  Serial.println("SERVO 1 ATTACK MODE"); 
   Servo1.write(0);
   delay(100);
   Servo1.write(180);
   delay(100);
   Servo1.write(0);
-  delay(100);
+  attackStatus = false;
   }
 
 
+// servo 2
+// Change servo to
+void servo2Defend() {
+  Serial.println("SERVO 2 DEFEND MODE"); 
+  defendStatus = true;
+  Servo2.write(0);
+  delay(100);
+  Servo2.write(180);
+  }
+
+
+void servo2UnDefend() {
+  Serial.println("SERVO 2 UNDEFEND MODE"); 
+  Servo2.write(0);
+  defendStatus = false;
+  }
+
+
+// Screen
+void screenIdleMode(){
+  idleStatus = true
+  
+  }
+void screenAttackMode(){
+
+  }
+void screenDefendMode(){
+
+  }
+void screenStartleMode(){
+
+  }
 
 
 void setup() {
@@ -47,9 +94,8 @@ void setup() {
 
   //servo
   // Attach servo to pin
-  Servo1.attach(servoPin); 
-
-
+  Servo1.attach(servoPin1); 
+  Servo2.attach(servoPin2); 
 
 }
 
@@ -81,15 +127,44 @@ void loop() {
   //Serial.println("Sonar Distance: " + distanceSonar + " cm");
 
 
-
-  // todo
-  // make servo attack if distance is some value
-  // from 0 to 180 to 0
-
+  // Checks
+  // Changes state to attack
   if(distanceSonar < 20){
-    servoAttack();
+    idleMode = false;
+    attackMode = true;
+    } else {
+      attackMode = false;
+      idleMode = true;
+      }
+
+  if(accelaration > 2) {
+    idleMode = false;
+    defendMode = true;
+    } else {
+      defendMode = false;
+      idleMode = true;
+      }
+
+
+  // Actions
+  // Does idleMode action
+  if(idleMode && !idleStatus) {
+    screenIdleMode();    
+    } else {
+      idleStatus = false;
+      }
+
+ 
+  // Does attackMode action
+  if(attackMode){
+    servo1Attack();
     }
 
-  
+  // Does attackMode action and status swicth
+  if(defendMode && !defendStatus) {
+    servo2Defend();
+    } else {
+      servo2UnDefend();
+      }
 
 }
