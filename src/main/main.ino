@@ -4,13 +4,20 @@
 
 // sonar
 // defines pins numbers
-#define PIN_TRIGSONAR 9
-#define PIN_ECHOSONAR 10
+#define PIN_TRIGSONAR1 9
+#define PIN_ECHOSONAR1 10
+
+#define PIN_TRIGSONAR2 7
+#define PIN_ECHOSONAR2 8
+
 
 // sonar
 // defines variables
 long durationSonar1;
 int distanceSonar1;
+
+long durationSonar2;
+int distanceSonar2;
 
 // servo
 // Declare the Servo pin 
@@ -50,7 +57,7 @@ Servo Servo2;
 
 // Mode functions
 void initiateFunctionIdleMode(){
-  Serial.println("IDLE MODE"); 
+  Serial.println("INITIATE IDLE"); 
   resetAll();
   idleModeStatus = true;
   
@@ -61,9 +68,12 @@ void initiateFunctionIdleMode(){
     Serial.println("idling");
   }
 
+
 void initiateFunctionCombatMode() {
-  Serial.println("COMBAT MODE");
+  Serial.println("INITIATE COMBAT");
   resetAll();
+  combatModeStatus = true;
+  
   
   screenCombatkMode();
   }
@@ -72,6 +82,7 @@ void repeaterFunctionCombatMode() {
   Serial.println("fighting");
   
   }
+
 
 void initiateFunctionAttack(){
   Serial.println("INITIATE ATTACK"); 
@@ -99,7 +110,7 @@ void initiateFunctionDefend(){
   }
   
 void initiateFunctionStartleMode(){
-  Serial.println("STARTLE MODE"); 
+  Serial.println("INITIATE STARTLE"); 
   resetAll();
   startleModeStatus = true;
 
@@ -111,14 +122,15 @@ void repeaterFunctionStartleMode(){
   }
 
 void initiateFunctionAngryMode() {
-  Serial.println("ANRGY MODE"); 
+  Serial.println("INITIATE ANRGY"); 
   resetAll();
+  angryModeStatus = true;
 
   screenAngryMode();
   }
 
 void repeaterunctionAngryMode() {
-  Serial.println("angrying");
+  Serial.println("being angry");
   
   }
 
@@ -148,7 +160,7 @@ void screenIdleMode(){
   
   }
 
- void screenCombatkMode(){
+void screenCombatkMode(){
 
   } 
 void screenAttack(){
@@ -168,28 +180,53 @@ void screenAngryMode(){
 
 
   // sonar read
-void sonarRead() {
+void sonar1Read() {
   
   // Clears the trigPin
-  digitalWrite(PIN_TRIGSONAR, LOW);
+  digitalWrite(PIN_TRIGSONAR1, LOW);
   delayMicroseconds(2);
   
   // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(PIN_TRIGSONAR, HIGH);
+  digitalWrite(PIN_TRIGSONAR1, HIGH);
   delayMicroseconds(10);
-  digitalWrite(PIN_TRIGSONAR, LOW);
+  digitalWrite(PIN_TRIGSONAR1, LOW);
   
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  durationSonar1 = pulseIn(PIN_ECHOSONAR, HIGH);
+  durationSonar1 = pulseIn(PIN_ECHOSONAR1, HIGH);
   
   // Calculating the distance
   distanceSonar1 = durationSonar1*0.034/2;
   
   // Prints the distance on the Serial Monitor
   char buffer[100];
-  sprintf(buffer, "Sonar Distance: %i cm", distanceSonar1);
+  sprintf(buffer, "Sonar1 Distance: %i cm", distanceSonar1);
   Serial.println(buffer);
-  //Serial.println("Sonar Distance: " + distanceSonar1 + " cm");
+  
+  }
+
+
+void sonar2Read() {
+  
+  // Clears the trigPin
+  digitalWrite(PIN_TRIGSONAR2, LOW);
+  delayMicroseconds(2);
+  
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(PIN_TRIGSONAR2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIGSONAR2, LOW);
+  
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  durationSonar2 = pulseIn(PIN_ECHOSONAR2, HIGH);
+  
+  // Calculating the distance
+  distanceSonar2 = durationSonar2*0.034/2;
+  
+  // Prints the distance on the Serial Monitor
+  char buffer[100];
+  sprintf(buffer, "Sonar2 Distance: %i cm", distanceSonar2);
+  Serial.println(buffer);
+
   
   }
 
@@ -221,8 +258,10 @@ void resetAll() {
 void setup() {
 
   // sonar
-  pinMode(PIN_TRIGSONAR, OUTPUT); // Sets the trigPin as an Output
-  pinMode(PIN_ECHOSONAR, INPUT); // Sets the echoPin as an Input
+  pinMode(PIN_TRIGSONAR1, OUTPUT); // Sets the trigPin as an Output
+  pinMode(PIN_ECHOSONAR1, INPUT); // Sets the echoPin as an Input
+  pinMode(PIN_TRIGSONAR2, OUTPUT);
+  pinMode(PIN_ECHOSONAR2, INPUT);
   Serial.begin(9600); // Starts the serial communication
 
   //servo
@@ -240,7 +279,8 @@ void loop() {
   
   //lets sonar read when not attacking
   if(!attackStatus){
-    sonarRead();
+    sonar1Read();
+    sonar2Read();
     }
 
 
@@ -258,7 +298,7 @@ void loop() {
       }
 
    // Changes mode to defend
-  if(accelaration > 2) {
+  if(distanceSonar2 < 20) {
     idleMode = false;
     defendMode = true;
     combatMode = true;
@@ -266,8 +306,12 @@ void loop() {
       defendMode = false;
       }
 
+  if(!defendMode && !attackMode){
+    combatMode = false;
+  }
+  
   // Changes mode to startled
-  if(distanceSonar1 < 20) {
+  if(accelaration > 20) {
     idleMode = false;
     startleMode = true;
     } else {
@@ -275,15 +319,15 @@ void loop() {
       }
 
   if(accelaration > 2) {
-  idleMode = false;
-  angrydMode = true;
-  } else {
-    angryMode = false;
-    }
+    idleMode = false;
+    angryMode = true;
+    } else {
+      angryMode = false;
+      }
 
 
    // Changes mode to idle
-   if(!attackMode && !defendMode  && !startleMode) {
+   if(!combatMode && !attackMode && !defendMode  && !startleMode && !angryMode) {
     idleMode = true;
     }
 
@@ -295,7 +339,22 @@ void loop() {
   //
 
 
-  // Does attackMode action every loop
+
+  if(combatMode && !combatStatus) {
+    repeaterFunctionCombatMode();
+    }
+
+  if(combatMode && !combatModeStatus) {
+    initiateFunctionCombatMode();
+    }
+
+  if(!combatMode && combatModeStatus) {
+    resetAll();
+    }
+
+
+
+  
   if(attackMode && !attackStatus){
     repeaterFunctionAttack();
     }
@@ -303,45 +362,56 @@ void loop() {
 
   if(attackMode && !attackModeStatus) {
     initiateFunctionAttack();
-    } else {
-      resetAll();
-      }
+    }
 
-
-  // Does defendMode action
-  if(defendMode && !defendModeStatus) {
-    initiateFunctionDefend();
-    } 
-
-  if(!defendMode) {
+  if(!attackMode && attackModeStatus) {
     resetAll();
     }
+
+
+
+
 
   if(defendMode && !defendStatus) {
     repeaterFunctionDefend();
     }
 
+  if(defendMode && !defendModeStatus) {
+    initiateFunctionDefend();
+    }
 
-  // Does startleMode action and status switch
-  if(startleMode && !startleModeStatus) {
-    initiateFunctionStartleMode();
-    } else {
-      resetAll();
-      }
+  if(!defendMode && defendModeStatus) {
+    resetAll();
+    }
+
+
 
   if(startleMode && !startleStatus) {
-  repeaterFunctionStartleMode();
+    repeaterFunctionStartleMode();
     }
-  
-  // Does idleMode action when idleMode is initiated
-  if(idleMode && !idleModeStatus) {
-    initiateFunctionIdleMode();
-    } else {
-      
-      }
 
-   if(idleMode && !idleStatus) {
+  if(startleMode && !startleModeStatus) {
+    initiateFunctionStartleMode();
+    }
+
+  if(!startleMode && startleModeStatus) {
+    resetAll();
+    }
+
+
+
+
+  if(idleMode && !idleStatus) {
     repeaterFunctionIdleMode();
     }
+
+  if(idleMode && !idleModeStatus) {
+    initiateFunctionIdleMode();
+    }
+
+  if(!idleMode && idleModeStatus) {
+    resetAll();
+    }
+    
  
 }
