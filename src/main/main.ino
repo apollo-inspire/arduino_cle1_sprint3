@@ -9,13 +9,13 @@
 
 // sonar
 // defines variables
-long durationSonar;
-int distanceSonar;
+long durationSonar1;
+int distanceSonar1;
 
 // servo
 // Declare the Servo pin 
-int servoPin1 = 3;
-int servoPin2 = 4;
+int servo1Pin1 = 3;
+int servo1Pin2 = 4;
 
 //
 int accelaration;
@@ -26,6 +26,9 @@ int lightAmount;
 bool idleMode = true;
 bool idleModeStatus = true;
 bool idleStatus = true;
+bool combatMode = false;
+bool combatModeStatus = false;
+bool combatStatus = false;
 bool attackMode = false;
 bool attackModeStatus = false;
 bool attackStatus = false;
@@ -35,6 +38,9 @@ bool defendStatus = false;
 bool startleMode = false;
 bool startleModeStatus = false;
 bool startleStatus = false;
+bool angryMode = false;
+bool angryModeStatus = false;
+bool angryStatus = false;
 
 
 // servo
@@ -55,32 +61,40 @@ void initiateFunctionIdleMode(){
     Serial.println("idling");
   }
 
-
-
-void initiateFunctionAttackMode(){
-  Serial.println("ATTACK MODE"); 
+void initiateFunctionCombatMode() {
+  Serial.println("COMBAT MODE");
   resetAll();
+  
+  screenCombatkMode();
+  }
+
+void repeaterFunctionCombatMode() {
+  Serial.println("fighting");
+  
+  }
+
+void initiateFunctionAttack(){
+  Serial.println("INITIATE ATTACK"); 
   attackModeStatus = true;
    
-  screenAttackMode();
+  screenAttack();
 }
   
-void repeaterFunctionAttackMode(){
+void repeaterFunctionAttack(){
   servo1Attack();
   Serial.println("attacking");
   }
 
   
-void initiateFunctionDefendMode(){
-  Serial.println("DEFEND MODE"); 
-  resetAll();
+void initiateFunctionDefend(){
+  Serial.println("INITIATE DEFEND"); 
   defendModeStatus = true;
   
   servo2Defend();
-  screenDefendMode();
+  screenDefend();
   }
 
-  void repeaterFunctionDefendMode(){
+  void repeaterFunctionDefend(){
   Serial.println("defending");
   }
   
@@ -91,10 +105,23 @@ void initiateFunctionStartleMode(){
 
   screenStartleMode();
   }
-
-  void repeaterFunctionStartleMode(){
+  
+void repeaterFunctionStartleMode(){
   Serial.println("starteling");
   }
+
+void initiateFunctionAngryMode() {
+  Serial.println("ANRGY MODE"); 
+  resetAll();
+
+  screenAngryMode();
+  }
+
+void repeaterunctionAngryMode() {
+  Serial.println("angrying");
+  
+  }
+
 
 
 // servo 1
@@ -120,14 +147,23 @@ void servo2Defend() {
 void screenIdleMode(){
   
   }
-void screenAttackMode(){
+
+ void screenCombatkMode(){
+
+  } 
+void screenAttack(){
 
   }
-void screenDefendMode(){
+void screenDefend(){
 
   }
+ 
 void screenStartleMode(){
 
+  }
+
+void screenAngryMode(){
+  
   }
 
 
@@ -144,16 +180,16 @@ void sonarRead() {
   digitalWrite(PIN_TRIGSONAR, LOW);
   
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  durationSonar = pulseIn(PIN_ECHOSONAR, HIGH);
+  durationSonar1 = pulseIn(PIN_ECHOSONAR, HIGH);
   
   // Calculating the distance
-  distanceSonar = durationSonar*0.034/2;
+  distanceSonar1 = durationSonar1*0.034/2;
   
   // Prints the distance on the Serial Monitor
   char buffer[100];
-  sprintf(buffer, "Sonar Distance: %i cm", distanceSonar);
+  sprintf(buffer, "Sonar Distance: %i cm", distanceSonar1);
   Serial.println(buffer);
-  //Serial.println("Sonar Distance: " + distanceSonar + " cm");
+  //Serial.println("Sonar Distance: " + distanceSonar1 + " cm");
   
   }
 
@@ -161,18 +197,24 @@ void resetAll() {
   Servo2.write(0);
   Servo1.write(0);
   
-  idleMode = true;
-  attackModeStatus = true;
-  idleStatus = true;
-  attackMode = false;
-  attackModeStatus = false;
-  attackStatus = false;
-  defendMode = false;
-  defendModeStatus = false;
-  defendStatus = false;
-  startleMode = false;
-  startleModeStatus = false;
-  startleStatus = false;
+  bool idleMode = true;
+  bool idleModeStatus = true;
+  bool idleStatus = true;
+  bool combatMode = false;
+  bool combatModeStatus = false;
+  bool combatStatus = false;
+  bool attackMode = false;
+  bool attackModeStatus = false;
+  bool attackStatus = false;
+  bool defendMode = false;
+  bool defendModeStatus = false;
+  bool defendStatus = false;
+  bool startleMode = false;
+  bool startleModeStatus = false;
+  bool startleStatus = false;
+  bool angryMode = false;
+  bool angryModeStatus = false;
+  bool angryStatus = false;
 }
 
 
@@ -185,8 +227,8 @@ void setup() {
 
   //servo
   // Attach servo to pin
-  Servo1.attach(servoPin1); 
-  Servo2.attach(servoPin2); 
+  Servo1.attach(servo1Pin1); 
+  Servo2.attach(servo1Pin2); 
 
 }
 
@@ -207,7 +249,7 @@ void loop() {
   //
   
   // Changes mode to attack
-  if(distanceSonar < 20){
+  if(distanceSonar1 < 20){
     idleMode = false;
     attackMode = true;
     } else {
@@ -244,12 +286,12 @@ void loop() {
 
   // Does attackMode action every loop
   if(attackMode && !attackStatus){
-    repeaterFunctionAttackMode();
+    repeaterFunctionAttack();
     }
 
 
   if(attackMode && !attackModeStatus) {
-    initiateFunctionAttackMode();
+    initiateFunctionAttack();
     } else {
       resetAll();
       }
@@ -257,7 +299,7 @@ void loop() {
 
   // Does defendMode action
   if(defendMode && !defendModeStatus) {
-    initiateFunctionDefendMode();
+    initiateFunctionDefend();
     } 
 
   if(!defendMode) {
@@ -265,7 +307,7 @@ void loop() {
     }
 
   if(defendMode && !defendStatus) {
-    repeaterFunctionDefendMode();
+    repeaterFunctionDefend();
     }
 
 
