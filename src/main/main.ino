@@ -239,7 +239,7 @@ void setup() {
 void loop() {
   
   //lets sonar read when not attacking
-  if(!attackModeStatus){
+  if(!attackStatus){
     sonarRead();
     }
 
@@ -252,6 +252,7 @@ void loop() {
   if(distanceSonar1 < 20){
     idleMode = false;
     attackMode = true;
+    combatMode = true;
     } else {
       attackMode = false;
       }
@@ -260,22 +261,32 @@ void loop() {
   if(accelaration > 2) {
     idleMode = false;
     defendMode = true;
+    combatMode = true;
     } else {
       defendMode = false;
       }
 
   // Changes mode to startled
-  if(lightAmount > 100) {
+  if(distanceSonar1 < 20) {
     idleMode = false;
     startleMode = true;
     } else {
       startleMode = false;
       }
 
+  if(accelaration > 2) {
+  idleMode = false;
+  angrydMode = true;
+  } else {
+    angryMode = false;
+    }
+
+
    // Changes mode to idle
    if(!attackMode && !defendMode  && !startleMode) {
     idleMode = true;
     }
+
 
 
 
@@ -333,7 +344,4 @@ void loop() {
     repeaterFunctionIdleMode();
     }
  
-
-
-
 }
