@@ -51,6 +51,11 @@ void initiateFunctionIdleMode(){
   screenIdleMode();
   }
 
+  void repeaterFunctionIdleMode(){
+    Serial.println("idling");
+  }
+
+
 
 void initiateFunctionAttackMode(){
   Serial.println("ATTACK MODE"); 
@@ -62,7 +67,9 @@ void initiateFunctionAttackMode(){
   
 void repeaterFunctionAttackMode(){
   servo1Attack();
+  Serial.println("attacking");
   }
+
   
 void initiateFunctionDefendMode(){
   Serial.println("DEFEND MODE"); 
@@ -71,6 +78,10 @@ void initiateFunctionDefendMode(){
   
   servo2Defend();
   screenDefendMode();
+  }
+
+  void repeaterFunctionDefendMode(){
+  Serial.println("defending");
   }
   
 void initiateFunctionStartleMode(){
@@ -81,6 +92,9 @@ void initiateFunctionStartleMode(){
   screenStartleMode();
   }
 
+  void repeaterFunctionStartleMode(){
+  Serial.println("starteling");
+  }
 
 
 // servo 1
@@ -235,7 +249,7 @@ void loop() {
 
 
   if(attackMode && !attackModeStatus) {
-    initiateFunctionStartleMode();
+    initiateFunctionAttackMode();
     } else {
       resetAll();
       }
@@ -250,6 +264,10 @@ void loop() {
     resetAll();
     }
 
+  if(defendMode && !defendStatus) {
+    repeaterFunctionDefendMode();
+    }
+
 
   // Does startleMode action and status switch
   if(startleMode && !startleModeStatus) {
@@ -257,6 +275,10 @@ void loop() {
     } else {
       resetAll();
       }
+
+  if(startleMode && !startleStatus) {
+  repeaterFunctionStartleMode();
+    }
   
   // Does idleMode action when idleMode is initiated
   if(idleMode && !idleModeStatus) {
@@ -264,6 +286,10 @@ void loop() {
     } else {
       
       }
+
+   if(idleMode && !idleStatus) {
+    repeaterFunctionIdleMode();
+    }
  
 
 
