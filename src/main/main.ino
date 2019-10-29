@@ -51,6 +51,14 @@ bool angryMode = false;
 bool angryModeStatus = false;
 bool angryStatus = false;
 
+bool screenStateIdle = true;
+bool screenStateCombat = false;
+bool screenStateAttack = false;
+bool screenStateDefend = false;
+bool screenStateStartle = false;
+bool screenStateAngry = false;
+
+
 // Screen pixels
 
 byte screenSpriteOff[] = {
@@ -126,7 +134,7 @@ B00000000
 byte screenSpriteAttack[] = {
 B00000000,
 B01100110,
-B11111111,
+B10011001,
 B01100110,
 B00000000,
 B01111110,
@@ -209,13 +217,18 @@ void repeaterFunctionCombatMode() {
 void initiateFunctionAttack(){
   Serial.println("INITIATE ATTACK"); 
   attackModeStatus = true;
-  screenAttack();
+
   
 }
   
 void repeaterFunctionAttack(){
-  servo1Attack();
   Serial.println("attacking");
+  screenAttack();
+  servo1Attack();
+  //delay(100);
+  //screenCombatkMode();
+  
+   
   }
 
   
@@ -283,28 +296,41 @@ void servo2Defend() {
 
 // Screen
 void screenIdleMode(){
+  resetScreenState();
+  screenStateIdle = true;
   setSprite(screenSpriteIdle);
 
   }
 
 void screenCombatkMode(){
+  resetScreenState();
+  screenStateCombat = true;
   setSprite(screenSpriteCombat);
 
   } 
 void screenAttack(){
+  resetScreenState();
+  screenStateAttack = true;
   setSprite(screenSpriteAttack);
+
 
   }
 void screenDefend(){
+  resetScreenState();
+  screenStateDefend = true;
   setSprite(screenSpriteDefend);
 
   }
  
 void screenStartleMode(){
+  resetScreenState();
+  screenStateStartle = true;
   setSprite(screenSpriteStartle);
   }
 
 void screenAngryMode(){
+  resetScreenState();
+  screenStateAngry = true;
   setSprite(screenSpriteAngry);
   }
 
@@ -392,9 +418,25 @@ void resetAll() {
   angryMode = false;
   angryModeStatus = false;
   angryStatus = false;
+
+  screenStateIdle = true;
+  screenStateIdle = false;
+  screenStateCombat = false;
+  screenStateAttack = false;
+  screenStateDefend = false;
+  screenStateStartle = false;
+  screenStateAngry = false;
 }
 
-
+void resetScreenState() {
+  screenStateIdle = false;
+  screenStateIdle = false;
+  screenStateCombat = false;
+  screenStateAttack = false;
+  screenStateDefend = false;
+  screenStateStartle = false;
+  screenStateAngry = false;
+  }
 
 
 
