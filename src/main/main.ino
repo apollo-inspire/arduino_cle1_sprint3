@@ -31,6 +31,8 @@ int accelaration;
 
 int lightAmount;
 
+int servoTimer;
+
 // modes
 bool idleMode = true;
 bool idleModeStatus = false;
@@ -274,15 +276,32 @@ void repeaterunctionAngryMode() {
 
 
 
+
 // servo 1
 // Change servo to
 void servo1Attack() {
-  attackStatus = true;
-  Servo1.write(180);
-  delay(100);
-  Servo1.write(0);
-  attackStatus = false;
+  servoTimer++;
+  //attackStatus = true;
+  Serial.println(servoTimer);
+  Serial.println("servo 1: start");
+  if(servoTimer < 2) {
+    Servo1.write(0);
+    Serial.println("servo 1: 0");
+    }  
+  if(servoTimer == 5) {
+    Servo1.write(180);
+    Serial.println("servo 1: 180");
+    }
+  if(servoTimer == 10) {
+    Servo1.write(0);
+    Serial.println("servo 1: 0");
   }
+  if(servoTimer > 15) {
+    servoTimer = 0;
+  }
+  Serial.println("servo 1: end");
+  //attackStatus = false;
+}
 
 
 // servo 2
