@@ -4,9 +4,8 @@
  
 #include <LedControl.h>
  
-#define PADSIZE 3
 
-//#define DEBUG 1
+
  
 byte sad[] = {
 B00000000,
@@ -31,7 +30,7 @@ B00000000
 };
 
 
-LedControl lc = LedControl(12,11,10,1);
+LedControl lc = LedControl(13,12,11,1);
 
 
 void setSprite(byte *sprite){

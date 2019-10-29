@@ -1,6 +1,6 @@
 // Libraries
 #include <Servo.h> 
-
+#include <LedControl.h>
 
 // sonar
 // defines pins numbers
@@ -10,6 +10,8 @@
 #define PIN_TRIGSONAR2 7
 #define PIN_ECHOSONAR2 8
 
+// Screen
+LedControl lc = LedControl(13,12,11,1);
 
 // sonar
 // defines variables
@@ -31,7 +33,7 @@ int lightAmount;
 
 // modes
 bool idleMode = true;
-bool idleModeStatus = true;
+bool idleModeStatus = false;
 bool idleStatus = true;
 bool combatMode = false;
 bool combatModeStatus = false;
@@ -49,6 +51,123 @@ bool angryMode = false;
 bool angryModeStatus = false;
 bool angryStatus = false;
 
+// Screen pixels
+
+byte screenSpriteOff[] = {
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000
+};
+
+byte screenSpriteOn[] = {
+B11111111,
+B11111111,
+B11111111,
+B11101001,
+B11101001,
+B11101111,
+B11101111,
+B11111111
+};
+
+byte screenSpriteSad[] = {
+B00000000,
+B01000100,
+B00010000,
+B00010000,
+B00000000,
+B00111000,
+B01000100,
+B00000000
+};
+ 
+byte screenSpriteSmile[] = {
+B00000000,
+B01000100,
+B00010000,
+B00010000,
+B00010000,
+B01000100,
+B00111000,
+B00000000
+};
+
+
+
+
+
+byte screenSpriteIdle[] = {
+B00000000,
+B01100110,
+B01100110,
+B00000000,
+B00000000,
+B01111110,
+B01111110,
+B00000000
+};
+
+byte screenSpriteCombat[] = {
+B00000000,
+B00000000,
+B01100110,
+B00000000,
+B00000000,
+B01111110,
+B01111110,
+B00000000
+};
+
+byte screenSpriteAttack[] = {
+B00000000,
+B01100110,
+B11111111,
+B01100110,
+B00000000,
+B01111110,
+B01111110,
+B00000000
+};
+
+byte screenSpriteDefend[] = {
+B00000000,
+B00000000,
+B01100110,
+B00000000,
+B00011000,
+B01100110,
+B01100110,
+B00011000
+};
+
+byte screenSpriteStartle[] = {
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000
+};
+
+byte screenSpriteAngry[] = {
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000,
+B00000000
+};
+
+
 
 // servo
 // Create a servo object 
@@ -59,9 +178,11 @@ Servo Servo2;
 void initiateFunctionIdleMode(){
   Serial.println("INITIATE IDLE"); 
   resetAll();
+  idleMode = true;
   idleModeStatus = true;
-  
   screenIdleMode();
+  
+  
   }
 
   void repeaterFunctionIdleMode(){
@@ -72,10 +193,11 @@ void initiateFunctionIdleMode(){
 void initiateFunctionCombatMode() {
   Serial.println("INITIATE COMBAT");
   resetAll();
+  combatMode = true;
   combatModeStatus = true;
-  
-  
   screenCombatkMode();
+  
+  
   }
 
 void repeaterFunctionCombatMode() {
@@ -87,8 +209,8 @@ void repeaterFunctionCombatMode() {
 void initiateFunctionAttack(){
   Serial.println("INITIATE ATTACK"); 
   attackModeStatus = true;
-   
   screenAttack();
+  
 }
   
 void repeaterFunctionAttack(){
@@ -100,9 +222,11 @@ void repeaterFunctionAttack(){
 void initiateFunctionDefend(){
   Serial.println("INITIATE DEFEND"); 
   defendModeStatus = true;
+  screenDefend();
   
   servo2Defend();
-  screenDefend();
+  
+  
   }
 
   void repeaterFunctionDefend(){
@@ -112,9 +236,10 @@ void initiateFunctionDefend(){
 void initiateFunctionStartleMode(){
   Serial.println("INITIATE STARTLE"); 
   resetAll();
+  startleMode = true;
   startleModeStatus = true;
 
-  screenStartleMode();
+  //screenStartleMode();
   }
   
 void repeaterFunctionStartleMode(){
@@ -126,7 +251,7 @@ void initiateFunctionAngryMode() {
   resetAll();
   angryModeStatus = true;
 
-  screenAngryMode();
+  //screenAngryMode();
   }
 
 void repeaterunctionAngryMode() {
@@ -150,32 +275,37 @@ void servo1Attack() {
 // servo 2
 // Change servo to
 void servo2Defend() {
-  defendModeStatus = true;
+  defendStatus = true;
   Servo2.write(180);
+  defendStatus = false;
   }
 
 
 // Screen
 void screenIdleMode(){
-  
+  setSprite(screenSpriteIdle);
+
   }
 
 void screenCombatkMode(){
+  setSprite(screenSpriteCombat);
 
   } 
 void screenAttack(){
+  setSprite(screenSpriteAttack);
 
   }
 void screenDefend(){
+  setSprite(screenSpriteDefend);
 
   }
  
 void screenStartleMode(){
-
+  setSprite(screenSpriteStartle);
   }
 
 void screenAngryMode(){
-  
+  setSprite(screenSpriteAngry);
   }
 
 
@@ -230,29 +360,43 @@ void sonar2Read() {
   
   }
 
+// Screen function
+  void setSprite(byte *sprite){
+    for(int r = 0; r < 8; r++){
+        lc.setRow(0, r, sprite[r]);
+    }
+}
+  
+ 
 void resetAll() {
   Servo2.write(0);
   Servo1.write(0);
+
+  lc.clearDisplay(0);
   
-  bool idleMode = true;
-  bool idleModeStatus = true;
-  bool idleStatus = true;
-  bool combatMode = false;
-  bool combatModeStatus = false;
-  bool combatStatus = false;
-  bool attackMode = false;
-  bool attackModeStatus = false;
-  bool attackStatus = false;
-  bool defendMode = false;
-  bool defendModeStatus = false;
-  bool defendStatus = false;
-  bool startleMode = false;
-  bool startleModeStatus = false;
-  bool startleStatus = false;
-  bool angryMode = false;
-  bool angryModeStatus = false;
-  bool angryStatus = false;
+  idleMode = true;
+  idleModeStatus = false;
+  idleStatus = true;
+  combatMode = false;
+  combatModeStatus = false;
+  combatStatus = false;
+  attackMode = false;
+  attackModeStatus = false;
+  attackStatus = false;
+  defendMode = false;
+  defendModeStatus = false;
+  defendStatus = false;
+  startleMode = false;
+  startleModeStatus = false;
+  startleStatus = false;
+  angryMode = false;
+  angryModeStatus = false;
+  angryStatus = false;
 }
+
+
+
+
 
 
 void setup() {
@@ -262,13 +406,26 @@ void setup() {
   pinMode(PIN_ECHOSONAR1, INPUT); // Sets the echoPin as an Input
   pinMode(PIN_TRIGSONAR2, OUTPUT);
   pinMode(PIN_ECHOSONAR2, INPUT);
-  Serial.begin(9600); // Starts the serial communication
+  
 
   //servo
   // Attach servo to pin
   Servo1.attach(servo1Pin1); 
   Servo2.attach(servo1Pin2); 
 
+  // Screen
+  // Wakeup call
+  lc.shutdown(0,false);
+  // Brightness to a medium values
+  lc.setIntensity(0, 8);
+  // Clear display
+  lc.clearDisplay(0);
+  randomSeed(analogRead(0));
+
+  Serial.begin(9600); // Starts the serial communication
+  Serial.println("Started");
+
+  initiateFunctionIdleMode();
 }
 
 
@@ -309,7 +466,9 @@ void loop() {
   if(!defendMode && !attackMode){
     combatMode = false;
   }
+
   
+/*  
   // Changes mode to startled
   if(accelaration > 20) {
     idleMode = false;
@@ -323,7 +482,8 @@ void loop() {
     angryMode = true;
     } else {
       angryMode = false;
-      }
+      } 
+*/
 
 
    // Changes mode to idle
@@ -338,15 +498,37 @@ void loop() {
   // Actions
   //
 
+  if(!idleMode) {
+    idleModeStatus = false;
+    }
+
+  if(idleMode && !idleModeStatus) {
+    initiateFunctionIdleMode();
+    }
+
+  if(idleMode && !idleStatus) {
+    repeaterFunctionIdleMode();
+    }
+
+
+
+  if(!idleMode && idleModeStatus) {
+    resetAll();
+    }
+    
+
+
+
+
+  if(combatMode && !combatModeStatus) {
+    initiateFunctionCombatMode();
+    }
 
 
   if(combatMode && !combatStatus) {
     repeaterFunctionCombatMode();
     }
 
-  if(combatMode && !combatModeStatus) {
-    initiateFunctionCombatMode();
-    }
 
   if(!combatMode && combatModeStatus) {
     resetAll();
@@ -354,44 +536,59 @@ void loop() {
 
 
 
-  
-  if(attackMode && !attackStatus){
-    repeaterFunctionAttack();
-    }
-
 
   if(attackMode && !attackModeStatus) {
     initiateFunctionAttack();
     }
 
+  if(attackMode) {
+    attackModeStatus = true;
+    }
+  
+  if(attackMode && !attackStatus){
+    repeaterFunctionAttack();
+    }
+
   if(!attackMode && attackModeStatus) {
-    resetAll();
+    attackMode = false;
+    attackModeStatus = false;
+    attackStatus = false;
+    
     }
 
 
 
 
-
-  if(defendMode && !defendStatus) {
-    repeaterFunctionDefend();
-    }
 
   if(defendMode && !defendModeStatus) {
     initiateFunctionDefend();
     }
 
-  if(!defendMode && defendModeStatus) {
-    resetAll();
+ if(defendMode) {
+    attackModeStatus = true;
     }
 
+  if(defendMode && !defendStatus) {
+    repeaterFunctionDefend();
+    }
+
+  if(!defendMode && defendModeStatus) {
+    defendMode = false;
+    defendModeStatus = false;
+    defendStatus = false;
+    }
+
+
+
+
+
+  if(startleMode && !startleModeStatus) {
+    initiateFunctionStartleMode();
+    }
 
 
   if(startleMode && !startleStatus) {
     repeaterFunctionStartleMode();
-    }
-
-  if(startleMode && !startleModeStatus) {
-    initiateFunctionStartleMode();
     }
 
   if(!startleMode && startleModeStatus) {
@@ -401,17 +598,6 @@ void loop() {
 
 
 
-  if(idleMode && !idleStatus) {
-    repeaterFunctionIdleMode();
-    }
 
-  if(idleMode && !idleModeStatus) {
-    initiateFunctionIdleMode();
-    }
-
-  if(!idleMode && idleModeStatus) {
-    resetAll();
-    }
-    
  
 }
