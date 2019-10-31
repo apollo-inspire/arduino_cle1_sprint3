@@ -115,44 +115,44 @@ byte screenSpriteIdle[] = {
 B00000000,
 B01100110,
 B01100110,
-B00000000,
-B00000000,
-B01111110,
-B01111110,
+B00000110,
+B00000110,
+B01100110,
+B01100110,
 B00000000
 };
 
 byte screenSpriteCombat[] = {
 B00000000,
-B00000000,
-B01100110,
-B00000000,
-B00000000,
-B01111110,
-B01111110,
+B00100110,
+B00100110,
+B00000110,
+B00000110,
+B00100110,
+B00100110,
 B00000000
 };
 
 byte screenSpriteAttack[] = {
-B00000000,
-B01100110,
-B10011001,
-B01100110,
-B00000000,
-B01111110,
-B01111110,
-B00000000
+B00100000,
+B01010110,
+B01010110,
+B00100110,
+B00100110,
+B01010110,
+B01010110,
+B00100000
 };
 
 byte screenSpriteDefend[] = {
 B00000000,
-B00000000,
-B01100110,
-B00000000,
-B00011000,
 B01100110,
 B01100110,
-B00011000
+B00001001,
+B00001001,
+B01100110,
+B01100110,
+B00000000
 };
 
 byte screenSpriteStartle[] = {
@@ -285,18 +285,18 @@ void servo1Attack() {
   Serial.println(servoTimer);
   Serial.println("servo 1: start");
   if(servoTimer < 2) {
-    Servo1.write(0);
+    Servo1.write(180);
     Serial.println("servo 1: 0");
     }  
-  if(servoTimer == 5) {
-    Servo1.write(180);
+  if(servoTimer == 4) {
+    Servo1.write(0);
     Serial.println("servo 1: 180");
     }
-  if(servoTimer == 10) {
-    Servo1.write(0);
+  if(servoTimer == 8) {
+    Servo1.write(180);
     Serial.println("servo 1: 0");
   }
-  if(servoTimer > 15) {
+  if(servoTimer > 12) {
     servoTimer = 0;
   }
   Serial.println("servo 1: end");
@@ -415,7 +415,7 @@ void sonar2Read() {
  
 void resetAll() {
   Servo2.write(0);
-  Servo1.write(0);
+  Servo1.write(180);
 
   lc.clearDisplay(0);
   
@@ -507,7 +507,7 @@ void loop() {
   //
   
   // Changes mode to attack
-  if(distanceSonar1 < 20){
+  if(distanceSonar2 < 40){
     idleMode = false;
     attackMode = true;
     combatMode = true;
@@ -516,7 +516,7 @@ void loop() {
       }
 
    // Changes mode to defend
-  if(distanceSonar2 < 20) {
+  if(distanceSonar2 > 3 && distanceSonar2 < 10) {
     idleMode = false;
     defendMode = true;
     combatMode = true;
