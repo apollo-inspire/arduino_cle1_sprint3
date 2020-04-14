@@ -1,3 +1,5 @@
+// fighting robot v3
+
 // Libraries
 #include <Servo.h> 
 #include <LedControl.h>
@@ -656,9 +658,7 @@ void loop() {
     resetAll();
     }
 
-
-
-
-
- 
 }
+
+// Lucas van der Vegt 2019
+// EOF
